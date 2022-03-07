@@ -62,12 +62,10 @@ func archive() {
 	zbcc := fmt.Sprintf("tools/%s", zbc)
 	zbccf := fmt.Sprintf("tools/%s", zbc)
 	files, err := archiver.FilesFromDisk(nil, map[string]string{
-		//"content/bolt_exec_puppet.nuspec": "bolt_exec_puppet.nuspec",
 		rtpp:                          rtppf,
 		"content/[Content_Types].xml": "[Content_Types].xml",
 		"content/_rels/.rels":         "_rels/.rels",
 		"content/package/services/metadata/core-properties/81fb83d7949f4e33baf8f5b203521668.psmdcp": "package/services/metadata/core-properties/81fb83d7949f4e33baf8f5b203521668.psmdcp",
-		//"tools/bolt_exec_puppet.zip":    "tools/bolt_exec_puppet.zip",
 		zbcc:                            zbccf,
 		"tools/chocolateyinstall.ps1":   "tools/chocolateyinstall.ps1",
 		"tools/chocolateyuninstall.ps1": "tools/chocolateyuninstall.ps1",
@@ -160,11 +158,21 @@ func createTmplFiles() {
 	check(err)
 	defer h.Close()
 	io.Copy(h, strings.NewReader(coPropStr))
+
+	contentTypeStr := fmt.Sprint(`<?xml version="1.0" encoding="utf-8"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml" />
+<Default Extension="nuspec" ContentType="application/octet" />
+<Default Extension="zip" ContentType="application/octet" />
+<Default Extension="ps1" ContentType="application/octet" />
+<Default Extension="psmdcp" ContentType="application/vnd.openxmlformats-package.core-properties+xml" /></Types>`)
+	j, err := os.Create("content/[Content_Types].xml")
+	check(err)
+	defer j.Close()
+	io.Copy(j, strings.NewReader(contentTypeStr))
 }
 
 func main() {
-	//mkDir()
-	//createTmplFiles()
 	// Loading Configuration keys for .nuspec file
 	idConfig := viperConfigVariable("id")
 	versionConfig := viperConfigVariable("version")
