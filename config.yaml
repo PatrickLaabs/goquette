@@ -1,4 +1,4 @@
-id: "test"
+id: "bolt_exec_puppet"
 version: "1.0.2"
 title: "bolt_exec_puppet (Install)"
 authors: "patrick"

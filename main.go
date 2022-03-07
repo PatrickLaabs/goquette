@@ -44,18 +44,21 @@ func viperConfigVariable(key string) string {
 
 func archive() {
 	idConf := viperConfigVariable("id")
-	archiveFormat := ".nupkg"
+	archiveFormat := ".zip"
 	// ToDo:
 	// fmt.SprintF for map strings, so we can insert id name from var into the string
-
+	tpp := idConf
+	rtpp := fmt.Sprintf("content/%s.nuspec", tpp)
+	rtppf := fmt.Sprintf("%s.nuspec", tpp)
 	files, err := archiver.FilesFromDisk(nil, map[string]string{
-		"content/bolt_exec_puppet.nuspec": "bolt_exec_puppet.nuspec",
-		"content/[Content_Types].xml":     "[Content_Types].xml",
-		"content/_rels/.rels":             "_rels/.rels",
+		//"content/bolt_exec_puppet.nuspec": "bolt_exec_puppet.nuspec",
+		rtpp:                          rtppf,
+		"content/[Content_Types].xml": "[Content_Types].xml",
+		"content/_rels/.rels":         "_rels/.rels",
 		"content/package/services/metadata/core-properties/81fb83d7949f4e33baf8f5b203521668.psmdcp": "package/services/metadata/core-properties/81fb83d7949f4e33baf8f5b203521668.psmdcp",
-		"content/tools/bolt_exec_puppet.zip":          "tools/bolt_exec_puppet.zip",
-		"content/tools/chocolateyinstall.ps1":         "tools/chocolateyinstall.ps1",
-		"content/tools/tools/chocolateyuninstall.ps1": "tools/chocolateyuninstall.ps1",
+		"tools/bolt_exec_puppet.zip":    "tools/bolt_exec_puppet.zip",
+		"tools/chocolateyinstall.ps1":   "tools/chocolateyinstall.ps1",
+		"tools/chocolateyuninstall.ps1": "tools/chocolateyuninstall.ps1",
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -90,11 +93,9 @@ func main() {
 	summaryConfig := viperConfigVariable("summary")
 	tagsConfig := viperConfigVariable("tags")
 
-	// ToDo:
-	// abstract .nuspec file name and get it from Id from config.yaml
 	// Creation of .nuspec file
 	data := idConfig
-	response := fmt.Sprintf("content/%d.nuspec", data)
+	response := fmt.Sprintf("content/%s.nuspec", data)
 	nuspecFile, err := os.Create(response)
 	if err != nil {
 		log.Fatal("error creating nuspec file", err)
