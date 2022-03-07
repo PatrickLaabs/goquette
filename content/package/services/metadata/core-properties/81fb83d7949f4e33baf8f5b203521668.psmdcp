@@ -2,7 +2,7 @@
 <coreProperties xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openxmlformats.org/package/2006/metadata/core-properties">
     <dc:creator>patrick</dc:creator>
     <dc:description>bolt_exec_puppet go binary for using puppet via bolt</dc:description>
-    <dc:identifier>bolt_exec_bolt</dc:identifier>
+    <dc:identifier>bolt_exec_puppet</dc:identifier>
     <version>1.0.2</version>
     <keywords>bolt_exec_puppet go golang</keywords>
     <dc:title>bolt_exec_puppet (Install)</dc:title>

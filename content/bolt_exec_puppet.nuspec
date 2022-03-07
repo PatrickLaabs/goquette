@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
-        <id>bolt_exec_bolt</id>
+        <id>bolt_exec_puppet</id>
         <version>1.0.2</version>
         <title>bolt_exec_puppet (Install)</title>
         <authors>patrick</authors>
