@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>bolt_exec_bolt</id>
+        <version>1.0.2</version>
+        <title>bolt_exec_puppet (Install)</title>
+        <authors>patrick</authors>
+        <owners>patrick</owners>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>bolt_exec_puppet go binary for using puppet via bolt</description>
+        <summary>Installiert bolt_exec_puppet unter Windows</summary>
+        <tags>bolt_exec_puppet go golang</tags>
+    </metadata>
+</package>
