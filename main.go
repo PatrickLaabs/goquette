@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"github.com/mholt/archiver/v4"
 	"github.com/spf13/viper"
+	"io"
 	"log"
 	"os"
+	"strings"
 	"text/template"
 )
 
@@ -26,6 +28,8 @@ type nuspecConfs struct {
 }
 
 func init() {
+	mkDir()
+	createTmplFiles()
 	tpl = template.Must(template.ParseGlob("templates/*.tmpl"))
 }
 
@@ -89,7 +93,78 @@ func archive() {
 	}
 }
 
+func check(e error) {
+	if e != nil {
+		log.Fatal(e)
+	}
+}
+
+func mkDir() {
+	err := os.Mkdir("content", 0755)
+	check(err)
+	err = os.Mkdir("content/_rels", 0755)
+	check(err)
+	err = os.Mkdir("content/package", 0755)
+	check(err)
+	err = os.Mkdir("content/package/services", 0755)
+	check(err)
+	err = os.Mkdir("content/package/services/metadata", 0755)
+	check(err)
+	err = os.Mkdir("content/package/services/metadata/core-properties", 0755)
+	check(err)
+	err = os.Mkdir("templates", 0755)
+	check(err)
+}
+
+func createTmplFiles() {
+	relsStr := fmt.Sprint(`<?xml version="1.0" encoding="utf-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+    <Relationship Type="http://schemas.microsoft.com/packaging/2010/07/manifest" Target="/{{.Id}}.nuspec" Id="R4b6b1994e8284062" />
+    <Relationship Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="/package/services/metadata/core-properties/81fb83d7949f4e33baf8f5b203521668.psmdcp" Id="Rc4eb3718cc22453f" />
+</Relationships>`)
+	f, err := os.Create("templates/rels.tmpl")
+	check(err)
+	defer f.Close()
+	io.Copy(f, strings.NewReader(relsStr))
+
+	nuspecStr := fmt.Sprint(`<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>{{.Id}}</id>
+        <version>{{.Version}}</version>
+        <title>{{.Title}}</title>
+        <authors>{{.Authors}}</authors>
+        <owners>{{.Owners}}</owners>
+        <requireLicenseAcceptance>{{.RequireLicenseAcceptance}}</requireLicenseAcceptance>
+        <description>{{.Description}}</description>
+        <summary>{{.Summary}}</summary>
+        <tags>{{.Tags}}</tags>
+    </metadata>
+</package>`)
+	g, err := os.Create("templates/nuspec.tmpl")
+	check(err)
+	defer g.Close()
+	io.Copy(g, strings.NewReader(nuspecStr))
+
+	coPropStr := fmt.Sprint(`<?xml version="1.0" encoding="utf-8"?>
+<coreProperties xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.openxmlformats.org/package/2006/metadata/core-properties">
+    <dc:creator>{{.Authors}}</dc:creator>
+    <dc:description>{{.Description}}</dc:description>
+    <dc:identifier>{{.Id}}</dc:identifier>
+    <version>{{.Version}}</version>
+    <keywords>{{.Tags}}</keywords>
+    <dc:title>{{.Title}}</dc:title>
+    <lastModifiedBy>choco, Version=0.11.3.0, Culture=neutral, PublicKeyToken=79d02ea9cad655eb;Microsoft Windows NT 10.0.19044.0;.NET Framework 4</lastModifiedBy>
+</coreProperties>`)
+	h, err := os.Create("templates/coreproperties.tmpl")
+	check(err)
+	defer h.Close()
+	io.Copy(h, strings.NewReader(coPropStr))
+}
+
 func main() {
+	//mkDir()
+	//createTmplFiles()
 	// Loading Configuration keys for .nuspec file
 	idConfig := viperConfigVariable("id")
 	versionConfig := viperConfigVariable("version")
