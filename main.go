@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"github.com/mholt/archiver/v4"
 	"github.com/spf13/viper"
 	"log"
 	"os"
@@ -39,22 +41,43 @@ func viperConfigVariable(key string) string {
 	return value
 }
 
-//func mkDir() {
-//	err := os.Mkdir("content", 0755)
-//	if err != nil {
-//		log.Fatal("Error creating content Folder", err)
-//	}
-//
-//	err := os.Mkdir("_rels", 0755)
-//	if err != nil {
-//		log.Fatal("Error creating _rels folder", err)
-//	}
-//
-//	defer os.RemoveAll("content")
-//}
+func archive() {
+	idConf := viperConfigVariable("id")
+	archiveFormat := ".nupkg"
+	// ToDo:
+	// fmt.SprintF for map strings, so we can insert id name from var into the string
+
+	files, err := archiver.FilesFromDisk(nil, map[string]string{
+		"content/bolt_exec_puppet.nuspec": "bolt_exec_puppet.nuspec",
+		"content/[Content_Types].xml":     "[Content_Types].xml",
+		"content/_rels/.rels":             "_rels/.rels",
+		"content/package/services/metadata/core-properties/81fb83d7949f4e33baf8f5b203521668.psmdcp": "package/services/metadata/core-properties/81fb83d7949f4e33baf8f5b203521668.psmdcp",
+		"content/tools/bolt_exec_puppet.zip":          "tools/bolt_exec_puppet.zip",
+		"content/tools/chocolateyinstall.ps1":         "tools/chocolateyinstall.ps1",
+		"content/tools/tools/chocolateyuninstall.ps1": "tools/chocolateyuninstall.ps1",
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// create the output file we'll write to
+	out, err := os.Create(idConf + archiveFormat)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer out.Close()
+
+	format := archiver.CompressedArchive{
+		Archival: archiver.Zip{},
+	}
+
+	err = format.Archive(context.Background(), out, files)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 
 func main() {
-	//mkDir()
 	// Loading Configuration keys for .nuspec file
 	idConfig := viperConfigVariable("id")
 	versionConfig := viperConfigVariable("version")
@@ -80,6 +103,13 @@ func main() {
 	}
 	defer relsFile.Close()
 
+	// Creation of coreproperties file
+	cPropFile, err := os.Create("content/package/services/metadata/core-properties/81fb83d7949f4e33baf8f5b203521668.psmdcp")
+	if err != nil {
+		log.Fatal("error creating core-properties file", err)
+	}
+	defer cPropFile.Close()
+
 	// Merging data from Configuration file to Template Engine
 	nuspecData := nuspecConfs{
 		Id:                       idConfig,
@@ -97,6 +127,15 @@ func main() {
 		Id: idConfig,
 	}
 
+	cPropData := nuspecConfs{
+		Authors:     authorsConfig,
+		Description: descriptionConfig,
+		Id:          idConfig,
+		Version:     versionConfig,
+		Tags:        tagsConfig,
+		Title:       titleConfig,
+	}
+
 	// Executing nuspec template file
 	err = tpl.ExecuteTemplate(nuspecFile, "nuspec.tmpl", nuspecData)
 	if err != nil {
@@ -106,11 +145,20 @@ func main() {
 	}
 
 	// Executing rels template file
-
 	err = tpl.ExecuteTemplate(relsFile, "rels.tmpl", relsData)
 	if err != nil {
 		log.Fatal("error executing rels.tmpl", err)
 	} else {
 		log.Println("Successfully executed rels.tmpl")
 	}
+
+	// Executing core-properties template file
+	err = tpl.ExecuteTemplate(cPropFile, "coreproperties.tmpl", cPropData)
+	if err != nil {
+		log.Fatal("error executing coreproperties.tmpl", err)
+	} else {
+		log.Println("Successfully executed coreproperties.tmpl")
+	}
+
+	archive()
 }
