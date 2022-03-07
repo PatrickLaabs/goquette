@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/mholt/archiver/v4"
 	"github.com/spf13/viper"
 	"log"
@@ -89,8 +90,12 @@ func main() {
 	summaryConfig := viperConfigVariable("summary")
 	tagsConfig := viperConfigVariable("tags")
 
+	// ToDo:
+	// abstract .nuspec file name and get it from Id from config.yaml
 	// Creation of .nuspec file
-	nuspecFile, err := os.Create("content/bolt_exec_puppet.nuspec")
+	data := idConfig
+	response := fmt.Sprintf("content/%d.nuspec", data)
+	nuspecFile, err := os.Create(response)
 	if err != nil {
 		log.Fatal("error creating nuspec file", err)
 	}
