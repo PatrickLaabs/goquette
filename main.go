@@ -22,6 +22,7 @@ type nuspecConfs struct {
 	Description              string
 	Summary                  string
 	Tags                     string
+	ZipPath                  string
 }
 
 func init() {
@@ -44,19 +45,26 @@ func viperConfigVariable(key string) string {
 
 func archive() {
 	idConf := viperConfigVariable("id")
-	archiveFormat := ".zip"
-	// ToDo:
-	// fmt.SprintF for map strings, so we can insert id name from var into the string
+	zipConf := viperConfigVariable("zipPath")
+	archiveFormat := ".nupkg"
+
+	// Formating string for .nuspec file in order to use the provided id inside the config.yaml file
 	tpp := idConf
 	rtpp := fmt.Sprintf("content/%s.nuspec", tpp)
 	rtppf := fmt.Sprintf("%s.nuspec", tpp)
+
+	// Formating string for using your zipped binary name from the config.yaml file
+	zbc := zipConf
+	zbcc := fmt.Sprintf("tools/%s", zbc)
+	zbccf := fmt.Sprintf("tools/%s", zbc)
 	files, err := archiver.FilesFromDisk(nil, map[string]string{
 		//"content/bolt_exec_puppet.nuspec": "bolt_exec_puppet.nuspec",
 		rtpp:                          rtppf,
 		"content/[Content_Types].xml": "[Content_Types].xml",
 		"content/_rels/.rels":         "_rels/.rels",
 		"content/package/services/metadata/core-properties/81fb83d7949f4e33baf8f5b203521668.psmdcp": "package/services/metadata/core-properties/81fb83d7949f4e33baf8f5b203521668.psmdcp",
-		"tools/bolt_exec_puppet.zip":    "tools/bolt_exec_puppet.zip",
+		//"tools/bolt_exec_puppet.zip":    "tools/bolt_exec_puppet.zip",
+		zbcc:                            zbccf,
 		"tools/chocolateyinstall.ps1":   "tools/chocolateyinstall.ps1",
 		"tools/chocolateyuninstall.ps1": "tools/chocolateyuninstall.ps1",
 	})
