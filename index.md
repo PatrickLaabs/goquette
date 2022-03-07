@@ -1,37 +1,57 @@
-## Welcome to GitHub Pages
+# Goquette
 
-You can use the [editor on GitHub](https://github.com/PatrickLaabs/goquette/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+With **Goquette** you can simplify your packaging experience with NuGet. \
+Set up the required files - Steps are listed below - and just run **Goquette**, and you're done.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## Usage:
 
-### Markdown
+* Create a 'config.yaml' File inside your root project folder
+* Create a 'tools' directory inside your root projekt folder
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Inside the `tools`-Directory, put your PowerShell scripts, which are consumed by chocolatey, \
+and your zipped program/binary.
+Take a look at the tools-Directory inside this **[Tools-Dir of Goquette](https://github.com/PatrickLaabs/goquette/tree/main/tools)** \
+for a better understanding.
 
-```markdown
-Syntax highlighted code block
+## Installation
 
-# Header 1
-## Header 2
-### Header 3
+### Build Goquette-Binary with Go
+Make sure you have a working installation of Go. Its easy to set up - just follow the official documentations. \
+Fork this repository and run `go build .` inside this project folder.
 
-- Bulleted
-- List
+### Pre-Compiled Binary
+Download the pre-compiled binary of **Goquette** from the 'Release'-Page on this **[GitHub Page](https://github.com/PatrickLaabs/goquette/releases)**.
 
-1. Numbered
-2. List
+* On Windows: \
+Move the extraced binary to a folder of your choice and put the path to **Goquette** into the Machine's PATH.
+* On Linux & Darwin(macOS): \
+Move the extraced binary to `/usr/local/bin`, check for permissions,
+and add the path inside your $PATH \
+`export PATH=$HOME/bin:/usr/local/bin:$PATH`
 
-**Bold** and _Italic_ and `Code` text
+## Contribution
 
-[Link](url) and ![Image](src)
-```
+Hope you like this project. \
+Every contribution is appreciated - feel free to use it in your project, fork it, modify it. Whatever you like :) 
 
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
+If you experience any issues during setup / running **Goquette**: \
+Open an Issue and let me know what's not working for you.
 
-### Jekyll Themes
+##  Example config.yaml
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/PatrickLaabs/goquette/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+> id: "<your_project_name>" \
+> version: "<your_software_version>" \
+> title: "<set_a_title>" \
+> authors: "<who's_the_author>" \
+> owners: "<who's_the_owner>" \
+> requireLicenseAcceptance: "<choose_true_or_false>" \
+> description: "<set_a_description>" \
+> summary: "what_does_the_program_do" \
+> tags: "<define_some_tags_for_chocolatey>" \
+> zipPath : "<name_of_your_zipped_file_inside_tools_dir>"
 
-### Support or Contact
+## Example Tools Folder structure
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+> tools/<your_zipped_binary>.zip \
+> tools/<chocolateyinstall.ps1> \
+> tools/<chocolateyuninstall.ps1>
