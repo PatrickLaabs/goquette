@@ -3,6 +3,8 @@
 With **Goquette** you can simplify your packaging experience with NuGet. \
 Set up the required files - Steps are listed below - and just run **Goquette**, and you're done.
 
+![Image alt text](images/Gopher_Goquette.tiff)
+
 ## Usage:
 
 * Create a 'config.yaml' File inside your root project folder
