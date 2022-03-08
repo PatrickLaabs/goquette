@@ -15,6 +15,13 @@ for a better understanding.
 
 ## Installation
 
+### Install via Go
+`go install github.com/PatrickLaabs/goquette@latest` \
+Make sure you have set your GOBIN Path correctly. \
+If not: \
+> export GOBIN="$GOPATH/bin" \
+> export PATH="$PATH:$GOBIN"
+
 ### Build Goquette-Binary with Go
 Make sure you have a working installation of Go. Its easy to set up - just follow the official documentations. \
 Fork this repository and run `go build .` inside this project folder.
