@@ -1,8 +1,11 @@
-module github.com/PatrickLaabs/goquettes
+module github.com/PatrickLaabs/goquette
 
 go 1.17
 
-require github.com/spf13/viper v1.10.1
+require (
+	github.com/mholt/archiver/v4 v4.0.0-alpha.5
+	github.com/spf13/viper v1.10.1
+)
 
 require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
@@ -14,7 +17,6 @@ require (
 	github.com/klauspost/pgzip v1.2.5 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
-	github.com/mholt/archiver/v4 v4.0.0-alpha.5 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/nwaples/rardecode/v2 v2.0.0-beta.2 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
