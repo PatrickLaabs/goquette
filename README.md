@@ -3,7 +3,7 @@
 With **Goquette** you can simplify your packaging experience with NuGet. \
 Set up the required files - Steps are listed below - and just run **Goquette**, and you're done.
 
-![Image alt text](images/Gopher_Goquette.tiff)
+![Image alt text](images/goquette.png)
 
 ## Usage:
 
@@ -20,10 +20,11 @@ for a better understanding.
 ### Install via Go
 `go install github.com/PatrickLaabs/goquette@latest` \
 Make sure you have set your GOBIN Path correctly. \
-If not: \
-> export GOBIN="$GOPATH/bin" \
-> export PATH="$PATH:$GOBIN"
-
+If not:
+```
+export GOBIN="$GOPATH/bin"
+export PATH="$PATH:$GOBIN"
+```
 ### Build Goquette-Binary with Go
 Make sure you have a working installation of Go. Its easy to set up - just follow the official documentations. \
 Fork this repository and run `go build .` inside this project folder.
@@ -48,19 +49,84 @@ Open an Issue and let me know what's not working for you.
 
 ##  Example config.yaml
 
-> id: "<your_project_name>" \
-> version: "<your_software_version>" \
-> title: "<set_a_title>" \
-> authors: "<who's_the_author>" \
-> owners: "<who's_the_owner>" \
-> requireLicenseAcceptance: "<choose_true_or_false>" \
-> description: "<set_a_description>" \
-> summary: "what_does_the_program_do" \
-> tags: "<define_some_tags_for_chocolatey>" \
-> zipPath : "<name_of_your_zipped_file_inside_tools_dir>"
+```
+id: "<your_project_name>"
+version: "<your_software_version>"
+title: "<set_a_title>"
+authors: "<who's_the_author>"
+owners: "<who's_the_owner>"
+requireLicenseAcceptance: "<choose_true_or_false>"
+description: "<set_a_description>"
+summary: "what_does_the_program_do"
+tags: "<define_some_tags_for_chocolatey>"
+zipPath : "<name_of_your_zipped_file_inside_tools_dir>"
+```
+
+---
 
 ## Example Tools Folder structure
 
-> tools/<your_zipped_binary>.zip \
-> tools/<chocolateyinstall.ps1> \
-> tools/<chocolateyuninstall.ps1>
+```
+tools/<your_zipped_binary>.zip
+tools/<chocolateyinstall.ps1>
+tools/<chocolateyuninstall.ps1>`
+```
+
+---
+
+## Goquette and Jenkins
+
+```
+pipeline {
+  agent any
+    environment {
+        GO111MODULE = 'on'
+        CGO_ENABLED = 0
+        GOPATH = "${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}"
+        PATH = "$PATH:$GOBIN"
+    }
+    tools {
+        go 'go-1.17.7'
+    }
+
+  stages {
+      stage('Preperation and Cleaning workdir') {
+          steps {
+              withEnv(["GOBIN=${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/bin"]) {
+              }
+              sh 'rm -rf $JENKINS_HOME/<output_folder>'
+              sh 'rm -rf $JENKINS_HOME/<output_folder>/tools'
+          }
+      }
+
+    stage('Creation of directories') {
+        steps {
+            sh 'mkdir $JENKINS_HOME/<output_folder>'
+            sh 'mkdir $JENKINS_HOME/<output_folder>/tools'
+        }
+    }
+
+    stage('Build') {
+      steps {
+        sh 'go build'
+        sh 'cp $JENKINS_HOME/workspace/$JOB_NAME/<name_of_compiled_go_binary> $JENKINS_HOME/<output_folder>/tools'
+        sh 'cp $JENKINS_HOME/workspace/$JOB_NAME/toolstemp/* $JENKINS_HOME/<output_folder>/tools'
+        sh 'cp $JENKINS_HOME/workspace/$JOB_NAME/config.yaml $JENKINS_HOME/<output_folder>'
+      }
+    }
+
+    stage('Goquette') {
+        steps {
+            sh 'go install github.com/PatrickLaabs/goquette@latest'
+            sh 'cd $JENKINS_HOME/<output_folder> && $JENKINS_HOME/jobs/$JOB_NAME/builds/$BUILD_ID/bin/goquette'
+            }
+        }
+
+    stage('DeployToNexus') {
+        steps {
+            echo 'deploying to nexus..'
+        }
+    }
+  }
+}
+```
