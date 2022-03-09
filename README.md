@@ -7,7 +7,7 @@ Set up the required files - Steps are listed below - and just run **Goquette**, 
 
 ## Usage:
 
-* Create a 'config.yaml' File inside your root project folder
+* Create a 'goquette.yaml' File inside your root project folder
 * Create a 'tools' directory inside your root projekt folder
 
 Inside the `tools`-Directory, put your PowerShell scripts, which are consumed by chocolatey, \
@@ -47,7 +47,7 @@ Every contribution is appreciated - feel free to use it in your project, fork it
 If you experience any issues during setup / running **Goquette**: \
 Open an Issue and let me know what's not working for you.
 
-##  Example config.yaml
+##  Example goquette.yaml
 
 ```
 id: "<your_project_name>"
@@ -111,7 +111,7 @@ pipeline {
         sh 'go build'
         sh 'cp $JENKINS_HOME/workspace/$JOB_NAME/<name_of_compiled_go_binary> $JENKINS_HOME/<output_folder>/tools'
         sh 'cp $JENKINS_HOME/workspace/$JOB_NAME/toolstemp/* $JENKINS_HOME/<output_folder>/tools'
-        sh 'cp $JENKINS_HOME/workspace/$JOB_NAME/config.yaml $JENKINS_HOME/<output_folder>'
+        sh 'cp $JENKINS_HOME/workspace/$JOB_NAME/goquette.yaml $JENKINS_HOME/<output_folder>'
       }
     }
 

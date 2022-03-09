@@ -34,7 +34,7 @@ func init() {
 }
 
 func viperConfigVariable(key string) string {
-	viper.SetConfigName("config")
+	viper.SetConfigName("goquette")
 	viper.AddConfigPath(".")
 	err := viper.ReadInConfig()
 	if err != nil {
@@ -52,12 +52,12 @@ func archive() {
 	zipConf := viperConfigVariable("zipPath")
 	archiveFormat := ".nupkg"
 
-	// Formating string for .nuspec file in order to use the provided id inside the config.yaml file
+	// Formating string for .nuspec file in order to use the provided id inside the goquette.yaml file
 	tpp := idConf
 	rtpp := fmt.Sprintf("content/%s.nuspec", tpp)
 	rtppf := fmt.Sprintf("%s.nuspec", tpp)
 
-	// Formating string for using your zipped binary name from the config.yaml file
+	// Formating string for using your zipped binary name from the goquette.yaml file
 	zbc := zipConf
 	zbcc := fmt.Sprintf("tools/%s", zbc)
 	zbccf := fmt.Sprintf("tools/%s", zbc)
