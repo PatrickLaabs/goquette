@@ -83,48 +83,84 @@ pipeline {
         GO111MODULE = 'on'
         CGO_ENABLED = 0
         GOPATH = "${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}"
-        PATH = "$PATH:$GOBIN"
+        GOBIN = "${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/bin"
+        PATH = "${PATH}:${GOBIN}"
     }
     tools {
         go 'go-1.17.7'
     }
 
   stages {
-      stage('Preperation and Cleaning workdir') {
-          steps {
-              withEnv(["GOBIN=${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/bin"]) {
-              }
-              sh 'rm -rf $JENKINS_HOME/<output_folder>'
-              sh 'rm -rf $JENKINS_HOME/<output_folder>/tools'
-          }
-      }
-
-    stage('Creation of directories') {
+    stage('Cleaning workspace'){
         steps {
-            sh 'mkdir $JENKINS_HOME/<output_folder>'
-            sh 'mkdir $JENKINS_HOME/<output_folder>/tools'
+            sh 'rm -rf $JENKINS_HOME/workspace/$JOB_NAME/content'
+            sh 'rm -rf $JENKINS_HOME/workspace/$JOB_NAME/templates'
+            sh 'rm -rf $JENKINS_HOME/workspace/$JOB_NAME/*.nupkg'
+            sh 'rm -rf $JENKINS_HOME/workspace/$JOB_NAME/*.zip'
+            sh 'rm -rf $JENKINS_HOME/workspace/$JOB_NAME/*.exe'
         }
     }
 
     stage('Build') {
       steps {
-        sh 'go build'
-        sh 'cp $JENKINS_HOME/workspace/$JOB_NAME/<name_of_compiled_go_binary> $JENKINS_HOME/<output_folder>/tools'
-        sh 'cp $JENKINS_HOME/workspace/$JOB_NAME/toolstemp/* $JENKINS_HOME/<output_folder>/tools'
-        sh 'cp $JENKINS_HOME/workspace/$JOB_NAME/goquette.yaml $JENKINS_HOME/<output_folder>'
+        sh 'GOOS=linux go build'
+        sh 'GOOS=windows go build'
+        sh 'tar cf $JENKINS_HOME/workspace/$JOB_NAME/tools/<your_application_name>.zip *.exe'
       }
     }
 
-    stage('Goquette') {
+    stage('Goquette - NuGet Packaging') {
         steps {
             sh 'go install github.com/PatrickLaabs/goquette@latest'
-            sh 'cd $JENKINS_HOME/<output_folder> && $JENKINS_HOME/jobs/$JOB_NAME/builds/$BUILD_ID/bin/goquette'
+            sh 'cd $JENKINS_HOME/workspace/$JOB_NAME && $JENKINS_HOME/jobs/$JOB_NAME/builds/$BUILD_ID/bin/goquette'
             }
         }
 
-    stage('DeployToNexus') {
+    stage('nFPM - rpm Packaging') {
+        steps {
+            sh 'go install github.com/goreleaser/nfpm/v2/cmd/nfpm@latest'
+            sh '$JENKINS_HOME/jobs/$JOB_NAME/builds/$BUILD_ID/bin/nfpm pkg --packager rpm --target $JENKINS_HOME/workspace/$JOB_NAME/'
+        }
+    }
+
+    stage('Deploy .nupkg to Nexus') {
         steps {
             echo 'deploying to nexus..'
+            nexusArtifactUploader(
+                nexusVersion: 'nexus2',
+                protocol: 'http',
+                nexusUrl: '192.168.86.222:8081/nexus',
+                groupId: 'com.example',
+                version: '1.0.2',
+                repository: 'nuget',
+                credentialsId: 'nexus-user-credentials',
+                artifacts: [
+                    [artifactId: '<project_name>',
+                    classifier: 'release',
+                     file: '$JENKINS_HOME/workspace/$JOB_NAME/<your_application_name>.nupkg',
+                     type: 'nuget']
+                ]
+             )
+        }
+    }
+
+    stage('Deploy .rpm to Nexus') {
+        steps {
+            nexusArtifactUploader(
+                nexusVersion: 'nexus2',
+                protocol: 'http',
+                nexusUrl: '192.168.86.222:8081/nexus',
+                groupId: 'com.example',
+                version: '1.0.2',
+                repository: 'rpm',
+                credentialsId: 'nexus-user-credentials',
+                artifacts: [
+                    [artifactId: '<project_name>',
+                     classifier: 'release',
+                     file: '$JENKINS_HOME/workspace/$JOB_NAME/<your_application_name>.rpm',
+                     type: 'rpm']
+                ]
+             )
         }
     }
   }
