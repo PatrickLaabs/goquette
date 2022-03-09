@@ -18,7 +18,9 @@ for a better understanding.
 ## Installation
 
 ### Install via Go
-`go install github.com/PatrickLaabs/goquette@latest` \
+```
+go install github.com/PatrickLaabs/goquette@latest`
+```
 Make sure you have set your GOBIN Path correctly. \
 If not:
 ```
