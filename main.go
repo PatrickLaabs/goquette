@@ -79,7 +79,12 @@ func archive() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer out.Close()
+	defer func(out *os.File) {
+		err := out.Close()
+		if err != nil {
+
+		}
+	}(out)
 
 	format := archiver.CompressedArchive{
 		Archival: archiver.Zip{},
@@ -122,7 +127,12 @@ func createTmplFiles() {
 </Relationships>`)
 	f, err := os.Create("templates/rels.tmpl")
 	check(err)
-	defer f.Close()
+	defer func(f *os.File) {
+		err := f.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(f)
 	io.Copy(f, strings.NewReader(relsStr))
 
 	nuspecStr := fmt.Sprint(`<?xml version="1.0"?>
@@ -141,7 +151,12 @@ func createTmplFiles() {
 </package>`)
 	g, err := os.Create("templates/nuspec.tmpl")
 	check(err)
-	defer g.Close()
+	defer func(g *os.File) {
+		err := g.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(g)
 	io.Copy(g, strings.NewReader(nuspecStr))
 
 	coPropStr := fmt.Sprint(`<?xml version="1.0" encoding="utf-8"?>
@@ -156,7 +171,12 @@ func createTmplFiles() {
 </coreProperties>`)
 	h, err := os.Create("templates/coreproperties.tmpl")
 	check(err)
-	defer h.Close()
+	defer func(h *os.File) {
+		err := h.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(h)
 	io.Copy(h, strings.NewReader(coPropStr))
 
 	contentTypeStr := fmt.Sprint(`<?xml version="1.0" encoding="utf-8"?>
@@ -168,7 +188,12 @@ func createTmplFiles() {
 <Default Extension="psmdcp" ContentType="application/vnd.openxmlformats-package.core-properties+xml" /></Types>`)
 	j, err := os.Create("content/[Content_Types].xml")
 	check(err)
-	defer j.Close()
+	defer func(j *os.File) {
+		err := j.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(j)
 	io.Copy(j, strings.NewReader(contentTypeStr))
 }
 
@@ -191,21 +216,36 @@ func main() {
 	if err != nil {
 		log.Fatal("error creating nuspec file", err)
 	}
-	defer nuspecFile.Close()
+	defer func(nuspecFile *os.File) {
+		err := nuspecFile.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(nuspecFile)
 
 	// Creation of .rels file
 	relsFile, err := os.Create("content/_rels/.rels")
 	if err != nil {
 		log.Fatal("error creating .rels file", err)
 	}
-	defer relsFile.Close()
+	defer func(relsFile *os.File) {
+		err := relsFile.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(relsFile)
 
 	// Creation of coreproperties file
 	cPropFile, err := os.Create("content/package/services/metadata/core-properties/81fb83d7949f4e33baf8f5b203521668.psmdcp")
 	if err != nil {
 		log.Fatal("error creating core-properties file", err)
 	}
-	defer cPropFile.Close()
+	defer func(cPropFile *os.File) {
+		err := cPropFile.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(cPropFile)
 
 	// Merging data from Configuration file to Template Engine
 	nuspecData := nuspecConfs{
