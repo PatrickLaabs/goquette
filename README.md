@@ -11,12 +11,12 @@ Set up the required files - Steps are listed below - and just run **Goquette**, 
 ## Usage:
 
 * Create a 'goquette.yaml' File inside your root project folder
-* Create a 'tools' directory inside your root projekt folder
+* Create a 'tools' directory inside your root project folder
 
 Inside the `tools`-Directory, put your PowerShell scripts, which are consumed by chocolatey, \
 and your zipped program/binary.
-Take a look at the tools-Directory inside this **[Tools-Dir of Goquette](https://github.com/PatrickLaabs/goquette/tree/main/tools)** \
-for a better understanding.
+Take a look inside the tools-Directory at this **[Tools-Dir of Goquette](https://github.com/PatrickLaabs/goquette/tree/main/tools)** \
+for a better understanding on how to use **Goquette**.
 
 ## Installation
 
@@ -80,6 +80,10 @@ tools/<chocolateyuninstall.ps1>`
 ---
 
 ## Goquette and Jenkins
+
+**Goquette** really shines, when used within a pipeline, e.g. Jenkins. \
+The point here is, that you only need to configure your `goquette.yaml`, prepare your _powershell scripts_ \
+and the rest is handled for you.
 
 ```
 pipeline {
