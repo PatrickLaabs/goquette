@@ -22,7 +22,7 @@ for a better understanding on how to use **Goquette**.
 
 ### Install via Go
 ```
-go install github.com/PatrickLaabs/goquette@latest`
+go install github.com/PatrickLaabs/goquette@latest
 ```
 Make sure you have set your GOBIN Path correctly. \
 If not:
