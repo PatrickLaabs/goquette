@@ -131,11 +131,11 @@ pipeline {
             nexusArtifactUploader(
                 nexusVersion: 'nexus2',
                 protocol: 'http',
-                nexusUrl: '192.168.86.222:8081/nexus',
+                nexusUrl: '<ip>:<port>/nexus',
                 groupId: 'com.example',
-                version: '1.0.2',
+                version: '<version>',
                 repository: 'nuget',
-                credentialsId: 'nexus-user-credentials',
+                credentialsId: '<creds>',
                 artifacts: [
                     [artifactId: '<project_name>',
                     classifier: 'release',
@@ -151,9 +151,9 @@ pipeline {
             nexusArtifactUploader(
                 nexusVersion: 'nexus2',
                 protocol: 'http',
-                nexusUrl: '192.168.86.222:8081/nexus',
+                nexusUrl: '<ip>:<port>/nexus',
                 groupId: 'com.example',
-                version: '1.0.2',
+                version: '<version>',
                 repository: 'rpm',
                 credentialsId: 'nexus-user-credentials',
                 artifacts: [
@@ -166,5 +166,32 @@ pipeline {
         }
     }
   }
+}
+```
+
+or a more simplistic approach:
+
+```
+pipeline {
+    agent any
+    
+    stages {
+        stage('Build and Packaging') {
+            steps {
+                script {
+                    def root = tool type: 'go', name: 'go-1.17.7'
+                    withEnv(["GOPATH=${root}", "PATH=${PATH}:${root}/bin"]) {
+                       sh 'GOOS=linux go build'
+                       sh 'GOOS=windows go build'
+                       sh 'tar cf ./tools/<.zipName> *.exe'
+                       sh 'go install github.com/PatrickLaabs/goquette@latest'
+                       sh 'goquette'
+                       sh 'go install github.com/goreleaser/nfpm/v2/cmd/nfpm@latest'
+                       sh 'nfpm pkg --packager rpm --target ./'
+                    }
+                }
+            }
+        }
+    }
 }
 ```
