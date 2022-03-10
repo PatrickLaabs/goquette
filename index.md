@@ -5,15 +5,18 @@ Set up the required files - Steps are listed below - and just run **Goquette**, 
 
 ![Image alt text](images/goquette.png)
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/PatrickLaabs/goquette.svg)](https://pkg.go.dev/github.com/PatrickLaabs/goquette)
+[![Go Report Card](https://goreportcard.com/badge/github.com/PatrickLaabs/goquette)](https://goreportcard.com/report/github.com/PatrickLaabs/goquette)
+
 ## Usage:
 
 * Create a 'goquette.yaml' File inside your root project folder
-* Create a 'tools' directory inside your root projekt folder
+* Create a 'tools' directory inside your root project folder
 
 Inside the `tools`-Directory, put your PowerShell scripts, which are consumed by chocolatey, \
 and your zipped program/binary.
-Take a look at the tools-Directory inside this **[Tools-Dir of Goquette](https://github.com/PatrickLaabs/goquette/tree/main/tools)** \
-for a better understanding.
+Take a look inside the tools-Directory at this **[Tools-Dir of Goquette](https://github.com/PatrickLaabs/goquette/tree/main/tools)** \
+for a better understanding on how to use **Goquette**.
 
 ## Installation
 
@@ -78,6 +81,10 @@ tools/<chocolateyuninstall.ps1>`
 
 ## Goquette and Jenkins
 
+**Goquette** really shines, when used within a pipeline, e.g. Jenkins. \
+The point here is, that you only need to configure your `goquette.yaml`, prepare your _powershell scripts_ \
+and the rest is handled for you.
+
 ```
 pipeline {
   agent any
@@ -131,11 +138,11 @@ pipeline {
             nexusArtifactUploader(
                 nexusVersion: 'nexus2',
                 protocol: 'http',
-                nexusUrl: '192.168.86.222:8081/nexus',
+                nexusUrl: '<ip>:<port>/nexus',
                 groupId: 'com.example',
-                version: '1.0.2',
+                version: '<version>',
                 repository: 'nuget',
-                credentialsId: 'nexus-user-credentials',
+                credentialsId: '<creds>',
                 artifacts: [
                     [artifactId: '<project_name>',
                     classifier: 'release',
@@ -151,9 +158,9 @@ pipeline {
             nexusArtifactUploader(
                 nexusVersion: 'nexus2',
                 protocol: 'http',
-                nexusUrl: '192.168.86.222:8081/nexus',
+                nexusUrl: '<ip>:<port>/nexus',
                 groupId: 'com.example',
-                version: '1.0.2',
+                version: '<version>',
                 repository: 'rpm',
                 credentialsId: 'nexus-user-credentials',
                 artifacts: [
@@ -166,5 +173,32 @@ pipeline {
         }
     }
   }
+}
+```
+
+or a more simplistic approach:
+
+```
+pipeline {
+    agent any
+    
+    stages {
+        stage('Build and Packaging') {
+            steps {
+                script {
+                    def root = tool type: 'go', name: 'go-1.17.7'
+                    withEnv(["GOPATH=${root}", "PATH=${PATH}:${root}/bin"]) {
+                       sh 'GOOS=linux go build'
+                       sh 'GOOS=windows go build'
+                       sh 'tar cf ./tools/<.zipName> *.exe'
+                       sh 'go install github.com/PatrickLaabs/goquette@latest'
+                       sh 'goquette'
+                       sh 'go install github.com/goreleaser/nfpm/v2/cmd/nfpm@latest'
+                       sh 'nfpm pkg --packager rpm --target ./'
+                    }
+                }
+            }
+        }
+    }
 }
 ```
