@@ -5,6 +5,9 @@ Set up the required files - Steps are listed below - and just run **Goquette**, 
 
 ![Image alt text](images/goquette.png)
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/PatrickLaabs/goquette.svg)](https://pkg.go.dev/github.com/PatrickLaabs/goquette)
+[![Go Report Card](https://goreportcard.com/badge/github.com/PatrickLaabs/goquette)](https://goreportcard.com/report/github.com/PatrickLaabs/goquette)
+
 ## Usage:
 
 * Create a 'goquette.yaml' File inside your root project folder
