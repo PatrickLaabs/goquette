@@ -22,7 +22,7 @@ for a better understanding on how to use **Goquette**.
 
 ### Install via Go
 ```
-go install github.com/PatrickLaabs/goquette@latest`
+go install github.com/PatrickLaabs/goquette@latest
 ```
 Make sure you have set your GOBIN Path correctly. \
 If not:
@@ -38,16 +38,16 @@ Fork this repository and run `go build .` inside this project folder.
 Download the pre-compiled binary of **Goquette** from the 'Release'-Page on this **[GitHub Page](https://github.com/PatrickLaabs/goquette/releases)**.
 
 * On Windows: \
-Move the extraced binary to a folder of your choice and put the path to **Goquette** into the Machine's PATH.
+  Move the extraced binary to a folder of your choice and put the path to **Goquette** into the Machine's PATH.
 * On Linux & Darwin(macOS): \
-Move the extraced binary to `/usr/local/bin`, check for permissions,
-and add the path inside your $PATH \
-`export PATH=$HOME/bin:/usr/local/bin:$PATH`
+  Move the extraced binary to `/usr/local/bin`, check for permissions,
+  and add the path inside your $PATH \
+  `export PATH=$HOME/bin:/usr/local/bin:$PATH`
 
 ## Contribution
 
 Hope you like this project. \
-Every contribution is appreciated - feel free to use it in your project, fork it, modify it. Whatever you like :) 
+Every contribution is appreciated - feel free to use it in your project, fork it, modify it. Whatever you like :)
 
 If you experience any issues during setup / running **Goquette**: \
 Open an Issue and let me know what's not working for you.
