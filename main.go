@@ -3,13 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/mholt/archiver/v4"
-	"github.com/spf13/viper"
 	"io"
 	"log"
 	"os"
 	"strings"
 	"text/template"
+
+	"github.com/mholt/archiver/v4"
+	"github.com/spf13/viper"
 )
 
 var tpl *template.Template
@@ -82,12 +83,14 @@ func archive() {
 	defer func(out *os.File) {
 		err := out.Close()
 		if err != nil {
-
+			fmt.Printf("Error closing the file: %s", err)
 		}
 	}(out)
 
 	format := archiver.CompressedArchive{
-		Archival: archiver.Zip{},
+		Archival: archiver.Zip{
+			Compression: 9,
+		},
 	}
 
 	err = format.Archive(context.Background(), out, files)
